@@ -6,10 +6,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.NotFoundException;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
 import org.springframework.stereotype.Service;
 
+import com.narendar.restws.exceptions.StudentBusinessException;
 import com.narendar.restws.model.Student;
 
 @Service
@@ -33,6 +36,12 @@ ArrayList<Student> response = new ArrayList<>(results);
 	}
 	@Override
 	public Student getStudents(Long id) {
+		if(students.get(id)==null) {
+			//throw new WebApplicationException(Response.Status.NOT_FOUND); not fount exception 404
+			//throw new WebApplicationException(Response.Status.FORBIDDEN);//forbidden exception 403
+			throw new NotFoundException();
+			
+		}
 		return students.get(id);
 	}
 	@Override
@@ -51,7 +60,8 @@ ArrayList<Student> response = new ArrayList<>(results);
 			response=Response.ok(student).build();
 		}
 		else {
-			response=Response.notModified().build();
+			//response=Response.notModified().build();
+			throw new StudentBusinessException();// custom exceptions creating..
 		}
 		return response;
 	}
